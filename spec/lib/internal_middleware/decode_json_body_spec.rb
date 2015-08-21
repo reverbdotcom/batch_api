@@ -27,6 +27,15 @@ describe BatchApi::InternalMiddleware::DecodeJsonBody do
       end
     end
 
+    context "for alternative json content types" do
+      ["application/hal+json", "application/vnd.api+json"].each do |content_type|
+        it "decodes" do
+          result.headers = {"Content-Type" => content_type}
+          expect(decoder.call(env).body).to eq(MultiJson.dump(json))
+        end
+      end
+    end
+
     context "for non-JSON responses" do
       it "doesn't decode" do
         result.headers = {"Content-Type" => "text/html"}
