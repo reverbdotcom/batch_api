@@ -59,12 +59,6 @@ describe BatchApi::Processor do
     end
 
     context "error conditions" do
-      it "(currently) throws an error if sequential is not true" do
-        request.params.delete("sequential")
-        expect {
-          BatchApi::Processor.new(request, app)
-        }.to raise_exception(BatchApi::Errors::BadOptionError)
-      end
 
       it "raise a OperationLimitExceeded error if too many ops provided" do
         ops = (BatchApi.config.limit + 1).to_i.times.collect {|i| i}
@@ -114,6 +108,12 @@ describe BatchApi::Processor do
 
     it "returns the formatted result of the strategy" do
       allow(stack).to receive(:call).and_return(stubby = double)
+      expect(processor.execute!["results"]).to eq(stubby)
+    end
+
+    it "defaults sequential to true (succeeds without this option)" do
+      allow(stack).to receive(:call).and_return(stubby = double)
+      request.params.delete("sequential")
       expect(processor.execute!["results"]).to eq(stubby)
     end
   end
