@@ -95,17 +95,15 @@ module BatchApi
     end
 
     # Internal: Processes any other provided options for validity.
-    # Currently, the :sequential option is REQUIRED (until parallel
-    # implementation is created).
+    # The sequential option is assumed to be true, since we have no
+    # support for parallel requests (yet)
     #
     # options - an options hash
-    #
-    # Raises Errors::BadOptionError if sequential is not provided.
     #
     # Returns the valid options hash.
     def process_options
       unless @request.params["sequential"]
-        raise Errors::BadOptionError, "Sequential flag is currently required"
+        @request.params["sequential"] = true
       end
       @request.params
     end
